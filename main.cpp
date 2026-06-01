@@ -24,6 +24,7 @@ bool isClawOpen = true;
 float camAngleX = 0.0f, camAngleY = 20.0f, camDistance = 15.0f;
 int lastMouseX = -1, lastMouseY = -1;
 bool isDragging = false;
+int cameraMode = 0;
 
 // Kỹ thuật Rendering
 bool isDrawingShadow = false;
@@ -328,6 +329,7 @@ void keyboard(unsigned char key, int x, int y) {
     if (key == 27) exit(0); // Nhấn ESC để thoát chương trình
 
     switch (key) {
+    case 'c': case 'C': cameraMode = (cameraMode + 1) % 3; break;
     case 'w': case 'W': craneZ -= 0.2f; break;
     case 's': case 'S': craneZ += 0.2f; break;
     case 'a': case 'A': craneX -= 0.2f; break;
@@ -414,7 +416,25 @@ void renderScene(void) {
     float camX = camDistance * sin(camAngleX * PI / 180.0f) * cos(camAngleY * PI / 180.0f);
     float camY = 3.0f + camDistance * sin(camAngleY * PI / 180.0f);
     float camZ = camDistance * cos(camAngleX * PI / 180.0f) * cos(camAngleY * PI / 180.0f);
-    gluLookAt(camX, camY, camZ, 0.0, 2.0, 0.0, 0.0, 1.0, 0.0);
+    if (cameraMode == 0) {
+        // Mode 0: Camera Cầu xoay 360 độ quanh máy
+        float camX = camDistance * sin(camAngleX * PI / 180.0f) * cos(camAngleY * PI / 180.0f);
+        float camY = 3.0f + camDistance * sin(camAngleY * PI / 180.0f);
+        float camZ = camDistance * cos(camAngleX * PI / 180.0f) * cos(camAngleY * PI / 180.0f);
+        gluLookAt(camX, camY, camZ, 0.0, 2.0, 0.0, 0.0, 1.0, 0.0);
+    }
+    else if (cameraMode == 1) {
+        // Mode 1: CLAW-CAM (Gắn Camera vào ngàm gắp)
+        gluLookAt(craneX, 3.5f + dropY, craneZ,
+            craneX, -0.5f, craneZ,
+            0.0, 0.0, -1.0);
+    }
+    else if (cameraMode == 2) {
+        // Mode 2: INSIDE-CAM (Nhìn từ góc khuất bên trong lồng kính ra ngoài)
+        gluLookAt(-2.2f, 0.5f, -2.2f,
+            2.0f, 0.0f, 2.0f,
+            0.0f, 1.0f, 0.0f);
+    }
 
     drawRoom();
     glDisable(GL_TEXTURE_2D);
