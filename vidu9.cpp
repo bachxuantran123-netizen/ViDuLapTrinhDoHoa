@@ -16,7 +16,7 @@ float rx=0, ry=0, rz=1, angle=0;
 GLuint texture=0;
 
 void init() {
-	texture = textureFromBMP("data/c.bmp");
+	texture = textureFromBMP("data/test_picture.bmp");
 }
 void release() {
 	glDeleteTextures(1, &texture);
